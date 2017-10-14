@@ -40,6 +40,6 @@ cd $srcdir
 ./configure --prefix=$prefix coin_skip_warn_cxxflags=yes \
     --with-blas="$prefix/lib/libcoinblas.a -lgfortran" \
     --with-lapack=$prefix/lib/libcoinlapack.a
-make
-make test
-make -j1 install
+make -j4
+make -j4 test
+make -j4 install
