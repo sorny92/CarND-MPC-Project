@@ -6,7 +6,7 @@ Self-Driving Car Engineer Nanodegree Program
 #### 1.  Student describes their model in detail. This includes the state, actuators and update equations.
 Based on the information received from the course and the Q&A video, I've created a model which can lap around the circuit without problems.
 The equations which I used to create the cosntrains of the models are based on the next:
-
+![model](https://github.com/sorny92/CarND-MPC-Project/blob/master/model.jpg)
 
 #### 2.  Student discusses the reasoning behind the chosen N (timestep length) and dt (elapsed duration between timesteps) values. Additionally the student details the previous values tried.
 N and dt values have been chosen based on a try & error method. I tried different values of N and dt. When I increased dt the response was to slow to make the car follow the path. When it was too high it responded to fast for the latency it had so it end up having erratic trajectories.
