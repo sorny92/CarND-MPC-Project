@@ -92,14 +92,31 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+          for(int i = 0; i < ptsx.size(); ++i) {
+            double const dx = ptsx[i] - px;
+            double const dy = ptsy[i] - py;
+            ptsx[i] = dx*cos(-psi) - dy*sin(-psi);
+            ptsy[i] = dx*sin(-psi) + dy*cos(-psi);
+          }
+
+
+          Eigen::VectorXd x_vals = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(ptsx.data(), ptsx.size());
+          Eigen::VectorXd y_vals = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(ptsy.data(), ptsy.size());
+          Eigen::VectorXd coefficients = polyfit(x_vals, y_vals, 3);
+
+          double cte = polyeval(coefficients, 0);
+          double epsylon = -atan(coefficients[1]);
+          Eigen::VectorXd state(6);
+          state << 0, 0, 0, v, cte, epsylon;
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
           * Both are in between [-1, 1].
           *
           */
-          double steer_value = 0;
-          double throttle_value = 0;
+          vector<double> result = mpc.Solve(state, coefficients);
+          double steer_value = -result[0];
+          double throttle_value = result[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -110,6 +127,11 @@ int main() {
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
+
+          for (int i = 2; i < result.size(); i += 2){ 
+            mpc_x_vals.push_back(result[i]);
+            mpc_y_vals.push_back(result[i+1]);
+          }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
@@ -122,12 +144,8 @@ int main() {
           vector<double> next_y_vals;
 
           for(int i = 0; i < ptsx.size(); ++i) {
-            double const dx = ptsx[i] - px;
-            double const dy = ptsy[i] - py;
-            double const new_x = dx*cos(-psi) -dy*sin(-psi);
-            double const new_y = dx*sin(-psi) + dy*cos(-psi);
-            next_x_vals.push_back(new_x);
-            next_y_vals.push_back(new_y);
+            next_x_vals.push_back(ptsx[i]);
+            next_y_vals.push_back(ptsy[i]);
           }
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
